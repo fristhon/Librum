@@ -4,73 +4,49 @@ import QtQuick.Controls
 import Librum.style
 import CustomComponents
 
-
-Item
-{
+Item {
     id: root
-    property bool checked : false
-    signal keyUp()
-    signal keyDown()
-    
+    property bool checked: false
+
     implicitWidth: 100
     implicitHeight: layout.height
-    
-    
-    RowLayout
-    {
+
+    RowLayout {
         id: layout
         Layout.fillWidth: true
         spacing: 4
-        
-        MCheckBox
-        {
+
+        MCheckBox {
             id: updatesCheckBox
             Layout.preferredWidth: 20
             Layout.preferredHeight: 20
-            
-            onClicked: root.checked = !root.checked;
-            
-            Keys.onPressed: 
-                (event) =>
-                {
-                    if(event.key === Qt.Key_Return)
-                    {
-                        updatesCheckBox.toggle();
-                        root.checked = !root.checked;
-                    }
-                    else if(event.key === Qt.Key_Down)
-                    {
-                        root.keyDown();
-                    }
-                    else if(event.key === Qt.Key_Up)
-                    {
-                        root.keyUp();
-                    }
-                }
+
+            onClicked: root.checked = !root.checked
+
+            Keys.onReturnPressed: {
+                this.toggle()
+                root.checked = !root.checked
+            }
         }
-        
-        Item
-        {
+
+        Item {
             id: keepMeUpdatedText
             Layout.fillWidth: true
             Layout.preferredHeight: keepMeUpdatedTextFirst.implicitHeight
             Layout.leftMargin: 6
-            
-            Column
-            {
+
+            Column {
                 spacing: 2
-                
-                Label
-                {
+
+                Label {
                     id: keepMeUpdatedTextFirst
                     text: "Keep me updated about new features and"
                     wrapMode: Text.WordWrap
                     font.pointSize: 11
                     color: Style.colorText
                 }
-                
-                Label
-                {
+
+                Label {
                     id: keepMeUpdatedTextSecond
                     text: "upcoming improvements."
                     wrapMode: Text.WordWrap
@@ -79,10 +55,5 @@ Item
                 }
             }
         }
-    }
-    
-    function giveFocus()
-    {
-        updatesCheckBox.giveFocus();
     }
 }
