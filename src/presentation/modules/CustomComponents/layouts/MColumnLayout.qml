@@ -27,7 +27,9 @@ ColumnLayout {
 
             //`focusReason` is not always reliable
             if (baseRoot.activeFocusItem.focusReason === undefined) {
-                updateFocusByIndex()
+                if (interactiveChilds.length > 0) {
+                    updateFocusByIndex()
+                }
                 return
             }
 
