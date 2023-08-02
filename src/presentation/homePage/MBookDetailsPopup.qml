@@ -8,40 +8,38 @@ import Librum.icons
 import Librum.controllers
 import Librum.globals
 
-
-Popup
-{
+Popup {
     id: root
     implicitWidth: 751
     implicitHeight: layout.implicitHeight
     focus: true
     padding: 0
-    background: Rectangle { radius: 6; color: Style.colorPopupBackground }
+    background: Rectangle {
+        radius: 6
+        color: Style.colorPopupBackground
+    }
     modal: true
-    Overlay.modal: Rectangle { color: Style.colorPopupDim; opacity: 1 }
-    
+    Overlay.modal: Rectangle {
+        color: Style.colorPopupDim
+        opacity: 1
+    }
+
     onAboutToHide: internal.unloadData()
-    onAboutToShow: { internal.setupPopup(); internal.loadData() }
-    Component.onCompleted: { applyButton.forceActiveFocus(); applyButton.active = true }
-    
-    
-    MFlickWrapper
-    {
-        id: flickWrapper
+    onAboutToShow: {
+        internal.loadData()
+    }
+
+    MFlickWrapper {
         anchors.fill: parent
         contentHeight: layout.height
-        
-        
-        ColumnLayout
-        {
+
+        MColumnLayout {
             id: layout
             width: parent.width
             spacing: 0
-            
-            
-            MButton
-            {
-                id: closeButton
+            rowNavigation: true
+
+            MButton {
                 Layout.preferredHeight: 32
                 Layout.preferredWidth: 32
                 Layout.topMargin: 12
@@ -54,13 +52,12 @@ Popup
                 borderColorOnPressed: Style.colorButtonBorder
                 imagePath: Icons.closePopup
                 imageSize: 14
-                
                 onClicked: root.close()
+
+                interactiveFocus: false
             }
-            
-            Label
-            {
-                id: popupTitle
+
+            Label {
                 Layout.topMargin: 20
                 Layout.leftMargin: 52
                 text: "Book details"
@@ -68,14 +65,13 @@ Popup
                 font.pointSize: 17
                 color: Style.colorTitle
             }
-            
+
+
             /*
               The SplitView contains all the book information, it holds the book cover
               on the left side, and the book data on the right.
               */
-            SplitView
-            {
-                id: splitView
+            SplitView {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 320
                 Layout.topMargin: 36
@@ -85,139 +81,111 @@ Popup
                 spacing: 10
                 smooth: true
                 // Create explicit handle to make the grabbable area bigger
-                handle: RowLayout
-                {
+                handle: RowLayout {
                     width: 9
                     spacing: 0
-                    
-                    
-                    Rectangle
-                    {
+
+                    Rectangle {
                         Layout.preferredWidth: 4
                         Layout.fillHeight: true
                         color: "transparent"
                     }
-                    
-                    Rectangle
-                    {
+
+                    Rectangle {
                         Layout.preferredWidth: 1
                         Layout.fillHeight: true
                         color: Style.colorDarkSeparator
                     }
-                    
-                    Rectangle
-                    {
+
+                    Rectangle {
                         Layout.preferredWidth: 4
                         Layout.fillHeight: true
                         color: "transparent"
                     }
                 }
-                
-                
+
+
                 /*
                   The book cover side of the SplitView
                   */
-                Item
-                {
-                    id: bookCoverSide
+                Item {
                     SplitView.preferredWidth: 218
                     SplitView.minimumWidth: 80
                     SplitView.maximumWidth: 246
-                    
-                    
-                    ColumnLayout
-                    {
-                        id: bookCoverSideLayout
+
+                    ColumnLayout {
                         width: parent.width - 20
                         anchors.verticalCenter: parent.verticalCenter
                         clip: true
                         spacing: 0
-                        
-                        
-                        Rectangle
-                        {
-                            id: bookCoverContainer
+
+                        Rectangle {
                             Layout.preferredWidth: parent.width
                             Layout.preferredHeight: 240
                             Layout.topMargin: 4
                             color: Style.colorBookImageBackground
                             radius: 4
-                            
-                            Image
-                            {
+
+                            Image {
                                 id: bookCover
                                 visible: Globals.selectedBook !== null ? source != "" : false
                                 anchors.centerIn: parent
                                 sourceSize.width: 188
                                 sourceSize.height: 238
                             }
-                            
-                            Label
-                            {
-                                id: noImageLabel
+
+                            Label {
                                 anchors.centerIn: parent
                                 visible: !bookCover.visible
                                 color: Style.colorNoImageLabel
-                                text: Globals.selectedBook !== null ? "." + Globals.selectedBook.format : ""
+                                text: Globals.selectedBook
+                                      !== null ? "." + Globals.selectedBook.format : ""
                                 font.pointSize: 20
                                 font.bold: true
                             }
                         }
-                        
-                        RowLayout
-                        {
-                            id: bookCoverButtons
+
+                        RowLayout {
                             Layout.topMargin: 22
                             spacing: 14
-                            
-                            
-                            MButton
-                            {
-                                id: changeButton
+
+                            component ICoverMButton: MButton {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 34
                                 borderWidth: 1
-                                backgroundColor: "transparent"
                                 opacityOnPressed: 0.8
-                                text: "Change"
                                 textColor: Style.colorText
                                 fontWeight: Font.DemiBold
                                 fontSize: 11.5
-                                
+                                Keys.onReturnPressed: {
+                                    this.clicked()
+                                }
+                            }
+
+                            ICoverMButton {
+                                text: "Change"
+                                backgroundColor: activeFocus ? Style.colorBasePurple : "transparent"
                                 onClicked: chooseImageDialog.open()
                             }
-                            
-                            MButton
-                            {
-                                id: resetButton
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 34
-                                borderWidth: 1
-                                backgroundColor: "transparent"
-                                opacityOnPressed: 0.8
+
+                            ICoverMButton {
                                 text: "Delete"
-                                textColor: Style.colorText
-                                fontWeight: Font.DemiBold
-                                fontSize: 11.5
-                                
-                                onClicked: bookCover.source = "";
+                                backgroundColor: activeFocus ? Style.colorRed : "transparent"
+                                onClicked: bookCover.source = ""
                             }
                         }
                     }
                 }
-                
+
+
                 /*
                   The book data side of the SplitView
                   */
-                Item
-                {
-                    id: bookDataSide
+                Item {
                     SplitView.minimumWidth: 100
                     SplitView.fillWidth: true
-                    
-                    
-                    ScrollView
-                    {
+
+                    ScrollView {
                         id: dataSideScrollView
                         anchors.fill: parent
                         anchors.topMargin: 0
@@ -227,78 +195,55 @@ Popup
                         clip: true
                         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
                         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                        
-                        Component.onCompleted: contentItem.maximumFlickVelocity = 600
-                        
-                        
-                        ColumnLayout
-                        {
+
+                        Component.onCompleted: {
+                            contentItem.maximumFlickVelocity = 600
+                            contentItem.contentY = 0
+                        }
+
+                        ColumnLayout {
                             id: dataSideLayout
                             width: parent.width - 18
                             height: parent.height
                             anchors.rightMargin: 8
                             spacing: 13
-                            
-                            
-                            MLabeledInputBox
-                            {
+
+                            component IMLabeledInputBox: MLabeledInputBox {
+                                Layout.fillWidth: true
+                                boxHeight: 34
+                                headerFontWeight: Font.Bold
+                                headerFontSize: 11.5
+                                placeholderContent: "Unknown"
+                                placeholderColor: Style.colorPlaceholderText
+                                headerToBoxSpacing: 3
+                                inputFontSize: 12
+                                inputFontColor: Style.colorLightInputText
+                                textPadding: 12
+                                borderWidth: 1
+                                borderRadius: 4
+                            }
+
+                            IMLabeledInputBox {
                                 id: titleField
-                                Layout.fillWidth: true
-                                boxHeight: 34
                                 headerText: "Title"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? Globals.selectedBook.title : ""
-                                placeholderContent: "Unknown"
-                                placeholderColor: Style.colorPlaceholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook
+                                      !== null ? Globals.selectedBook.title : ""
                             }
-                            
-                            MLabeledInputBox
-                            {
+
+                            IMLabeledInputBox {
                                 id: authorsField
-                                Layout.fillWidth: true
-                                boxHeight: 34
                                 headerText: "Authors"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? Globals.selectedBook.authors : ""
-                                placeholderContent: "Unknown"
-                                placeholderColor: Style.colorPlaceholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook
+                                      !== null ? Globals.selectedBook.authors : ""
                             }
-                            
-                            MLabeledInputBox
-                            {
-                                id: pagesField
-                                Layout.fillWidth: true
-                                boxHeight: 34
+
+                            IMLabeledInputBox {
                                 headerText: "Pages"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? 
-                                          Globals.selectedBook.pageCount : internal.placeholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook !== null ? Globals.selectedBook.pageCount : internal.placeholderText
                                 readOnly: true
                             }
-                            
-                            MComboBox
-                            {
+
+                            MComboBox {
                                 id: languageComboBox
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 53
@@ -308,233 +253,173 @@ Popup
                                 headerFontColor: Style.colorTitle
                                 dropdownIconSize: 9
                                 maxHeight: 200
-                                model: ListModel
-                                {
-                                    ListElement { text: "English" }
-                                    ListElement { text: "German"  }
-                                    ListElement { text: "Italian" }
-                                    ListElement { text: "French" }
-                                    ListElement { text: "Romanian" }
-                                    ListElement { text: "Spanish" }
-                                    ListElement { text: "Mandarin" }
-                                    ListElement { text: "Portugese" }
-                                    ListElement { text: "Hindi" }
-                                    ListElement { text: "Bengali" }
-                                    ListElement { text: "Russian" }
-                                    ListElement { text: "Arabic" }
-                                    ListElement { text: "Japanese" }
-                                    ListElement { text: "Indonesian" }
-                                    ListElement { text: "Turkish" }
-                                    ListElement { text: "Korean" }
-                                    ListElement { text: "Hungarian" }
-                                    ListElement { text: "Thai"  }
-                                    ListElement { text: "Swahli" }
-                                    ListElement { text: "Dutch" }
+                                model: ListModel {
+                                    ListElement {
+                                        text: "English"
+                                    }
+                                    ListElement {
+                                        text: "German"
+                                    }
+                                    ListElement {
+                                        text: "Italian"
+                                    }
+                                    ListElement {
+                                        text: "French"
+                                    }
+                                    ListElement {
+                                        text: "Romanian"
+                                    }
+                                    ListElement {
+                                        text: "Spanish"
+                                    }
+                                    ListElement {
+                                        text: "Mandarin"
+                                    }
+                                    ListElement {
+                                        text: "Portugese"
+                                    }
+                                    ListElement {
+                                        text: "Hindi"
+                                    }
+                                    ListElement {
+                                        text: "Bengali"
+                                    }
+                                    ListElement {
+                                        text: "Russian"
+                                    }
+                                    ListElement {
+                                        text: "Arabic"
+                                    }
+                                    ListElement {
+                                        text: "Japanese"
+                                    }
+                                    ListElement {
+                                        text: "Indonesian"
+                                    }
+                                    ListElement {
+                                        text: "Turkish"
+                                    }
+                                    ListElement {
+                                        text: "Korean"
+                                    }
+                                    ListElement {
+                                        text: "Hungarian"
+                                    }
+                                    ListElement {
+                                        text: "Thai"
+                                    }
+                                    ListElement {
+                                        text: "Swahli"
+                                    }
+                                    ListElement {
+                                        text: "Dutch"
+                                    }
                                 }
                             }
-                            
-                            MLabeledInputBox
-                            {
+
+                            IMLabeledInputBox {
                                 id: documentCreatorField
                                 Layout.fillWidth: true
-                                boxHeight: 34
                                 headerText: "Document creator"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? Globals.selectedBook.creator : ""
-                                placeholderContent: "Unknown"
-                                placeholderColor: Style.colorPlaceholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook
+                                      !== null ? Globals.selectedBook.creator : ""
                             }
-                            
-                            MLabeledInputBox
-                            {
+
+                            IMLabeledInputBox {
                                 id: creationDateField
-                                Layout.fillWidth: true
-                                boxHeight: 34
                                 headerText: "Creation date"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? Globals.selectedBook.creationDate : ""
-                                placeholderContent: "Unknown"
-                                placeholderColor: Style.colorPlaceholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook
+                                      !== null ? Globals.selectedBook.creationDate : ""
                             }
-                            
-                            MLabeledInputBox
-                            {
+
+                            IMLabeledInputBox {
                                 id: formatField
-                                Layout.fillWidth: true
-                                boxHeight: 34
                                 headerText: "Format"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null &&  Globals.selectedBook.format !== "" ? 
-                                          Globals.selectedBook.format : internal.placeholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook !== null
+                                      && Globals.selectedBook.format !== "" ? Globals.selectedBook.format : internal.placeholderText
                                 readOnly: true
                             }
-                            
-                            MLabeledInputBox
-                            {
-                                id: sizeField
-                                Layout.fillWidth: true
-                                boxHeight: 34
+
+                            IMLabeledInputBox {
                                 headerText: "Document size"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null &&  Globals.selectedBook.documentSize !== "" ? 
-                                          Globals.selectedBook.documentSize : internal.placeholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook !== null
+                                      && Globals.selectedBook.documentSize
+                                      !== "" ? Globals.selectedBook.documentSize : internal.placeholderText
                                 readOnly: true
                             }
-                            
-                            MLabeledInputBox
-                            {
-                                id: addedField                                
-                                Layout.fillWidth: true
-                                boxHeight: 34
+
+                            IMLabeledInputBox {
                                 headerText: "Added"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? 
-                                          Globals.selectedBook.addedToLibrary : internal.placeholderText
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook !== null ? Globals.selectedBook.addedToLibrary : internal.placeholderText
                                 readOnly: true
                             }
-                            
-                            MLabeledInputBox
-                            {
-                                id: lastOpenedField
-                                Layout.fillWidth: true
-                                Layout.bottomMargin: 3
-                                boxHeight: 34
+
+                            IMLabeledInputBox {
                                 headerText: "Last opened"
-                                headerFontWeight: Font.Bold
-                                headerFontSize: 11.5
-                                text: Globals.selectedBook !== null ? 
-                                          Globals.selectedBook.lastOpened : internal.placeholderText
-                                
-                                headerToBoxSpacing: 3
-                                inputFontSize: 12
-                                inputFontColor: Style.colorLightInputText
-                                textPadding: 12
-                                borderWidth: 1
-                                borderRadius: 4
+                                text: Globals.selectedBook !== null ? Globals.selectedBook.lastOpened : internal.placeholderText
                                 readOnly: true
                             }
                         }
                     }
                 }
-            }              
-            
-            RowLayout
-            {
-                id: buttonLayout
+            }
+
+            RowLayout {
                 Layout.preferredWidth: parent.width
                 Layout.topMargin: 65
                 Layout.bottomMargin: 42
                 Layout.leftMargin: 52
                 Layout.rightMargin: 52
                 spacing: 16
-                
-                
-                MButton
-                {
-                    id: applyButton
+
+                component IMButton: MButton {
                     Layout.preferredWidth: 140
                     Layout.preferredHeight: 38
                     Layout.alignment: Qt.AlignLeft
-                    borderWidth: active ? 0 : 1
-                    backgroundColor: active ? Style.colorBasePurple : "transparent"
+                    borderWidth: activeFocus ? 0 : 1
+                    backgroundColor: activeFocus ? Style.colorBasePurple : "transparent"
+                    textColor: activeFocus ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
+                    fontWeight: Font.Bold
+                    fontSize: 12
+                    Keys.onReturnPressed: this.clicked()
+                }
+
+                IMButton {
                     text: "Apply"
-                    textColor: active ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
-                    fontWeight: Font.Bold
-                    fontSize: 12
-                    
-                    onClicked: { internal.saveData(); root.close() }
-                    Keys.onReturnPressed: { internal.saveData(); root.close() }
-                    Keys.onRightPressed: internal.focusCancelButton()
-                    Keys.onTabPressed: internal.focusCancelButton()
+                    onClicked: {
+                        internal.saveData()
+                        root.close()
+                    }
                 }
-                
-                MButton
-                {
-                    id: cancelButton
-                    Layout.preferredWidth: 140
-                    Layout.preferredHeight: 38
-                    Layout.alignment: Qt.AlignLeft
-                    borderWidth: active ? 0 : 1
-                    backgroundColor: active ? Style.colorBasePurple : "transparent"
-                    opacityOnPressed: 0.7
+
+                IMButton {
                     text: "Cancel"
-                    textColor: active ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
-                    fontWeight: Font.Bold
-                    fontSize: 12
-                    
-                    onClicked: root.close()
-                    Keys.onReturnPressed: root.close();
-                    Keys.onLeftPressed: internal.focusApplyButton()
-                    Keys.onRightPressed:  internal.focusDeleteButton()
-                    Keys.onTabPressed: internal.focusDeleteButton()
+                    textColor: activeFocus ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
+                    opacityOnPressed: 0.7
+                    onClicked: {
+                        root.close()
+                    }
                 }
-                
-                Item { id: widthFiller; Layout.fillWidth: true }
-                
-                MButton
-                {
-                    id: deleteButton
-                    Layout.preferredWidth: 140
-                    Layout.preferredHeight: 38
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                IMButton {
                     Layout.alignment: Qt.AlignRight
-                    borderWidth: active ? 0 : 1
-                    backgroundColor: active ? Style.colorRed : "transparent"
+                    backgroundColor: activeFocus ? Style.colorRed : "transparent"
                     opacityOnPressed: 0.7
                     text: "Delete"
-                    textColor: active ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
-                    fontWeight: Font.Bold
-                    fontSize: 12
-                    imagePath: active ? Icons.trashHighlighted : Icons.trash
+                    imagePath: activeFocus ? Icons.trashHighlighted : Icons.trash
                     imageSize: 17
                     imageSpacing: 10
-                    
-                    onClicked: acceptDeletionPopup.open();
-                    Keys.onReturnPressed: acceptDeletionPopup.open();
-                    Keys.onLeftPressed: internal.focusCancelButton()
-                    Keys.onTabPressed: internal.focusApplyButton()
+                    onClicked: acceptDeletionPopup.open()
                 }
             }
         }
     }
-    
-    
-    MWarningPopup
-    {
+
+    MWarningPopup {
         id: acceptDeletionPopup
         x: root.width / 2 - implicitWidth / 2
         y: root.height / 2 - implicitHeight / 2 - 30
@@ -545,112 +430,76 @@ Popup
         rightButtonText: "Yes, Delete Book"
         buttonsWidth: 180
         messageBottomSpacing: 10
-        
-        onOpenedChanged: if(opened) acceptDeletionPopup.giveFocus()
+
+        onOpenedChanged: if (opened)
+                             acceptDeletionPopup.giveFocus()
         onDecisionMade: close()
-        onRightButtonClicked:
-        {
-            BookController.deleteBook(Globals.selectedBook.uuid);
-            root.close();
+        onRightButtonClicked: {
+            BookController.deleteBook(Globals.selectedBook.uuid)
+            root.close()
         }
     }
-    
-    FileDialog
-    {
+
+    FileDialog {
         id: chooseImageDialog
         acceptLabel: "Select"
         fileMode: FileDialog.OpenFile
         folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
-        nameFilters: ["All files (*.png *.jpg *.jpg *.jpeg)", "png files (*.png)", "jpg files (*.jpg)", 
-            "jpeg files (*.jpeg)"]
-        
+        nameFilters: ["All files (*.png *.jpg *.jpg *.jpeg)", "png files (*.png)", "jpg files (*.jpg)", "jpeg files (*.jpeg)"]
+
         onAccepted: bookCover.source = file
     }
-    
-    QtObject
-    {
+
+    QtObject {
         id: internal
         property string placeholderText: "Unknown"
-        
-        function focusApplyButton()
-        {
-            cancelButton.active = false;
-            deleteButton.active = false;
-            
-            applyButton.active = true;
-            applyButton.forceActiveFocus();
-        }
-        
-        function focusCancelButton()
-        {
-            applyButton.active = false;
-            deleteButton.active = false;
-            
-            cancelButton.active = true;
-            cancelButton.forceActiveFocus();
-        }
-        
-        function focusDeleteButton()
-        {
-            applyButton.active = false;
-            cancelButton.active = false;
-            
-            deleteButton.active = true;
-            deleteButton.forceActiveFocus();
-        }
-        
-        function saveData()
-        {
-            var operationsMap = {};
-            
-            if(titleField.text !== Globals.selectedBook.title)
-                operationsMap[BookController.MetaProperty.Title] = titleField.text;
-            
-            if(authorsField.text !== Globals.selectedBook.authors)
-                operationsMap[BookController.MetaProperty.Authors] = authorsField.text;
-            
-            if(languageComboBox.text !== Globals.selectedBook.language && languageComboBox.text != "")
-                operationsMap[BookController.MetaProperty.Language] = languageComboBox.text;
-            
-            if(documentCreatorField.text !== Globals.selectedBook.creator && documentCreatorField.text != "")
-                operationsMap[BookController.MetaProperty.Creator] = documentCreatorField.text;
-            
-            if(creationDateField.text !== Globals.selectedBook.creationDate && creationDateField.text != internal.placeholderText)
-                operationsMap[BookController.MetaProperty.CreationDate] = creationDateField.text;
-            
-            if(formatField.text !== Globals.selectedBook.format && formatField.text != internal.placeholderText)
-                operationsMap[BookController.MetaProperty.Format] = formatField.text;
-            
-            BookController.updateBook(Globals.selectedBook.uuid, operationsMap);
-            
-            
+
+        function saveData() {
+            var operationsMap = {}
+
+            if (titleField.text !== Globals.selectedBook.title)
+                operationsMap[BookController.MetaProperty.Title] = titleField.text
+
+            if (authorsField.text !== Globals.selectedBook.authors)
+                operationsMap[BookController.MetaProperty.Authors] = authorsField.text
+
+            if (languageComboBox.text !== Globals.selectedBook.language
+                    && languageComboBox.text != "")
+                operationsMap[BookController.MetaProperty.Language] = languageComboBox.text
+
+            if (documentCreatorField.text !== Globals.selectedBook.creator
+                    && documentCreatorField.text != "")
+                operationsMap[BookController.MetaProperty.Creator] = documentCreatorField.text
+
+            if (creationDateField.text !== Globals.selectedBook.creationDate
+                    && creationDateField.text != internal.placeholderText)
+                operationsMap[BookController.MetaProperty.CreationDate] = creationDateField.text
+
+            if (formatField.text !== Globals.selectedBook.format
+                    && formatField.text != internal.placeholderText)
+                operationsMap[BookController.MetaProperty.Format] = formatField.text
+
+            BookController.updateBook(Globals.selectedBook.uuid, operationsMap)
+
             // Handle book cover specially
-            if(bookCover.source != Globals.selectedBook.coverPath)   // Needs to be !=, the types are different (QUrl and QString)
-                BookController.changeBookCover(Globals.selectedBook.uuid, bookCover.source);
+            if (bookCover.source != Globals.selectedBook.coverPath)
+                // Needs to be !=, the types are different (QUrl and QString)
+                BookController.changeBookCover(Globals.selectedBook.uuid,
+                                               bookCover.source)
         }
-        
-        function setupPopup()
-        {
-            applyButton.forceActiveFocus(); 
-            applyButton.active = true;
-            cancelButton.active = false;
-            deleteButton.active = false;
-            
-            dataSideScrollView.contentItem.contentY = 0;
+
+        function loadData() {
+            if (Globals.selectedBook.coverPath !== "")
+                bookCover.source = Qt.binding(function () {
+                    return Globals.selectedBook.coverPath
+                })
+
+            if (Globals.selectedBook.language !== "")
+                languageComboBox.setDefaultItem(Globals.selectedBook.language)
         }
-        
-        function loadData()
-        {
-            if(Globals.selectedBook.coverPath !== "")
-                bookCover.source = Qt.binding( function () { return Globals.selectedBook.coverPath })
-            
-            if(Globals.selectedBook.language !== "")
-                languageComboBox.setDefaultItem(Globals.selectedBook.language);
-        }
-        
-        function unloadData()
-        {
-            languageComboBox.deselectCurrenItem();
+
+        function unloadData() {
+            languageComboBox.deselectCurrenItem()
         }
     }
 }
