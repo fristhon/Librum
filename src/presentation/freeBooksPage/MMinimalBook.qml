@@ -4,51 +4,42 @@ import QtQuick.Layouts
 import Librum.style
 import Librum.icons
 
-
-Item 
-{
+Item {
     id: root
     implicitWidth: 190
     implicitHeight: 304
-    
-    ColumnLayout
-    {
-        id: layout
+
+    ColumnLayout {
         anchors.fill: parent
         spacing: 0
-        
+
+
         /**
           A rectangle with rounded corners which is overlapping with the top half of
           the book to create a rounded top, while the rest of the book is rectangluar
           */
-        Rectangle
-        {
-            id: upperBookPartRounding
+        Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 16
             radius: 4
             color: Style.colorBookImageBackground
         }
-        
+
+
         /**
           The upper book half which contains the book cover
           */
-        Rectangle
-        {
-            id: bookCoverRect
+        Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 230
             Layout.topMargin: -5
             color: Style.colorBookImageBackground
-            
-            ColumnLayout
-            {
+
+            ColumnLayout {
                 anchors.centerIn: parent
                 spacing: 0
-                
-                Image
-                {
-                    id: bookCover
+
+                Image {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: -8
                     sourceSize.height: 241
@@ -57,29 +48,24 @@ Item
                 }
             }
         }
-        
+
+
         /**
           The lower book half which contains the book information
           */
-        Rectangle
-        {
-            id: informationRect
+        Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 65
             color: Style.colorBookBackground
             border.width: 1
             border.color: Style.colorBookBorder
-            
-            ColumnLayout
-            {
-                id: informationRectLayout
+
+            ColumnLayout {
                 width: parent.width - internal.paddingInsideBook * 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 0
-                
-                Label
-                {
-                    id: bookName
+
+                Label {
                     Layout.fillWidth: true
                     Layout.topMargin: 4
                     text: "The books title which can be 2 lines long ..."
@@ -89,12 +75,10 @@ Item
                     lineHeight: 0.8
                     wrapMode: TextInput.WordWrap
                 }
-                
-                Label
-                {
-                    id: authors
+
+                Label {
                     Layout.fillWidth: true
-                    Layout.topMargin: 5                    
+                    Layout.topMargin: 5
                     text: "Stephen R. Covey"
                     color: Style.colorLightText
                     font.pointSize: 10
@@ -102,15 +86,9 @@ Item
             }
         }
     }
-    
-    QtObject
-    {
+
+    QtObject {
         id: internal
-        property int paddingInsideBook : 14
+        property int paddingInsideBook: 14
     }
-    
-    function giveFocus()
-    {
-        root.forceActiveFocus();
-    }    
 }

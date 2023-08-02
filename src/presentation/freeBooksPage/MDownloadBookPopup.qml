@@ -5,42 +5,41 @@ import CustomComponents
 import Librum.style
 import Librum.icons
 
-
-Popup
-{
+Popup {
     id: root
     implicitWidth: 751
     implicitHeight: layout.height
     padding: 0
-    background: Rectangle { radius: 6; color: Style.colorPopupBackground }
-    
+    background: Rectangle {
+        radius: 6
+        color: Style.colorPopupBackground
+    }
+
     modal: true
-    Overlay.modal: Rectangle
-    {
+    Overlay.modal: Rectangle {
         color: Style.colorPopupDim
         opacity: 1
     }
-    
-    onOpened: downloadButton.forceActiveFocus()
-    
-    
-    MFlickWrapper
-    {
-        id: flickWrapper
+
+    onOpenedChanged: {
+        //because this Popup exsits in a View
+        //so must pass focuse manually
+        if (root.opened) {
+            layout.forceActiveFocus()
+        }
+    }
+
+    MFlickWrapper {
         anchors.fill: parent
         contentHeight: layout.height
-        
-        
-        ColumnLayout
-        {
+
+        MColumnLayout {
             id: layout
             width: parent.width
             spacing: 0
-            
-            
-            MButton
-            {
-                id: closePopupButton
+            rowNavigation: true
+
+            MButton {
                 Layout.preferredHeight: 32
                 Layout.preferredWidth: 32
                 Layout.topMargin: 12
@@ -53,54 +52,46 @@ Popup
                 borderColorOnPressed: Style.colorButtonBorder
                 imagePath: Icons.closePopup
                 imageSize: 14
-                
+
+                interactiveFocus: false
+
                 onClicked: root.close()
             }
-            
-            Pane
-            {
-                id: content
+
+            Pane {
                 Layout.fillWidth: true
                 horizontalPadding: 52
                 bottomPadding: 42
-                background: Rectangle { color: "transparent"; radius: 6 }
-                
-                
-                ColumnLayout
-                {
-                    id: contentLayout
+                background: Rectangle {
+                    color: "transparent"
+                    radius: 6
+                }
+
+                ColumnLayout {
                     width: parent.width
                     spacing: 0
-                    
-                    Label
-                    {
-                        id: pageTitle
+
+                    Label {
                         Layout.topMargin: 6
                         text: "Download book"
                         font.weight: Font.Bold
                         font.pointSize: 17
                         color: Style.colorTitle
                     }
-                    
-                    RowLayout
-                    {
-                        id: bookInformationLayout
+
+                    RowLayout {
                         spacing: 28
                         Layout.fillWidth: true
                         Layout.topMargin: 32
-                        
-                        
-                        Rectangle
-                        {
+
+                        Rectangle {
                             id: bookCoverArea
                             Layout.preferredWidth: 198
                             Layout.preferredHeight: 258
                             color: Style.colorBookImageBackground
                             radius: 4
-                            
-                            Image
-                            {
-                                id: bookCover
+
+                            Image {
                                 anchors.centerIn: parent
                                 Layout.alignment: Qt.AlignHCenter
                                 sourceSize.height: bookCoverArea.height - 2
@@ -108,170 +99,78 @@ Popup
                                 fillMode: Image.PreserveAspectFit
                             }
                         }
-                        
-                        ScrollView
-                        {
-                            id: bookInformation
+
+                        ScrollView {
                             Layout.preferredHeight: 263
                             Layout.fillWidth: true
                             Layout.topMargin: -4
                             contentWidth: width
                             clip: true
                             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                            
+
                             // contentItem is the underlying flickable of ScrollView
                             Component.onCompleted: contentItem.maximumFlickVelocity = 600
-                            
-                            
-                            ColumnLayout
-                            {
-                                id: bookDetails
+
+                            ColumnLayout {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.rightMargin: 16
                                 spacing: 16
-                                
-                                
-                                MLabeledInputBox
-                                {
-                                    id: titleField
+
+                                component IMLabeledInputBox: MLabeledInputBox {
                                     Layout.fillWidth: true
                                     boxHeight: 34
+                                    headerFontWeight: Font.Bold
+                                    headerFontSize: 11.5
+                                    headerToBoxSpacing: 3
+                                    inputFontSize: 12
+                                    inputFontColor: Style.colorReadOnlyInputText
+                                    textPadding: 12
+                                    borderWidth: 1
+                                    borderRadius: 4
+                                    readOnly: true
+                                }
+
+                                IMLabeledInputBox {
                                     headerText: "Title"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "The 7 habits of highly effective people"
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
-                                
-                                MLabeledInputBox
-                                {
-                                    id: authorField
-                                    Layout.fillWidth: true
-                                    boxHeight: 34
+                                IMLabeledInputBox {
                                     headerText: "Authors"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "Stephen R. Covey"
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
-                                
-                                MLabeledInputBox
-                                {
-                                    id: publicationField
-                                    Layout.fillWidth: true
-                                    boxHeight: 34
+                                IMLabeledInputBox {
                                     headerText: "Publication"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "United States: Dodd, Mead and Company,1922."
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
-                                
-                                MLabeledInputBox
-                                {
-                                    id: languageField
-                                    Layout.fillWidth: true
-                                    boxHeight: 34
+                                IMLabeledInputBox {
                                     headerText: "Language"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "English"
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
-                                
-                                MLabeledInputBox
-                                {
-                                    id: pagesField
-                                    Layout.fillWidth: true
-                                    boxHeight: 34
+                                IMLabeledInputBox {
                                     headerText: "Pages"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "411"
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
-                                
-                                MLabeledInputBox
-                                {
-                                    id: sizeField
-                                    Layout.fillWidth: true
-                                    boxHeight: 34
+
+                                IMLabeledInputBox {
                                     headerText: "Size"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "2.3 MB"
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
-                                
-                                MLabeledInputBox
-                                {
-                                    id: formatField
-                                    Layout.fillWidth: true
-                                    Layout.bottomMargin: 3
-                                    boxHeight: 34
+                                IMLabeledInputBox {
                                     headerText: "Format"
-                                    headerFontWeight: Font.Bold
-                                    headerFontSize: 11.5
                                     text: "PDF"
-                                    headerToBoxSpacing: 3
-                                    inputFontSize: 12
-                                    inputFontColor: Style.colorReadOnlyInputText
-                                    textPadding: 12
-                                    borderWidth: 1
-                                    borderRadius: 4
-                                    readOnly: true
                                 }
                             }
                         }
                     }
-                    
-                    ColumnLayout
-                    {
+
+                    ColumnLayout {
                         id: bookDescriptionLayout
                         Layout.fillWidth: true
                         Layout.topMargin: 28
                         spacing: 3
-                        
-                        
-                        Label
-                        {
+
+                        Label {
                             id: bookDescriptionHeader
                             Layout.fillWidth: true
                             text: "Content"
@@ -279,9 +178,8 @@ Popup
                             font.weight: Font.Bold
                             color: Style.colorTitle
                         }
-                        
-                        Rectangle
-                        {
+
+                        Rectangle {
                             id: bookDescriptionField
                             Layout.fillWidth: true
                             Layout.preferredHeight: 78
@@ -289,10 +187,8 @@ Popup
                             radius: 5
                             border.width: 1
                             border.color: Style.colorContainerBorder
-                            
-                            
-                            TextArea
-                            {
+
+                            TextArea {
                                 id: bookDescriptionTextArea
                                 anchors.fill: parent
                                 leftPadding: 12
@@ -300,17 +196,15 @@ Popup
                                 topPadding: 8
                                 bottomPadding: 8
                                 selectByMouse: true
-                                text: "Your habits determine your character and later define" +
-                                      " your life. Don’t blame outside factors when you fail in life." +
-                                      " Also, don’t think that succeeding in one area of your life will" +
-                                      " mean that you’re destined for triumph."
+                                text: "Your habits determine your character and later define"
+                                      + " your life. Don’t blame outside factors when you fail in life." + " Also, don’t think that succeeding in one area of your life will"
+                                      + " mean that you’re destined for triumph."
                                 wrapMode: Text.WordWrap
                                 color: Style.colorReadOnlyInputText
                                 font.pointSize: 12
                                 readOnly: true
-                                
-                                background: Rectangle   
-                                {   
+
+                                background: Rectangle {
                                     anchors.fill: parent
                                     radius: bookDescriptionField.radius
                                     color: "transparent"
@@ -318,82 +212,51 @@ Popup
                             }
                         }
                     }
-                    
-                    RowLayout
-                    {
+
+                    RowLayout {
                         id: buttonsLayout
                         Layout.topMargin: 42
                         spacing: 16
-                        
-                        /*
-                          Download button, the color/border changes if the button is focused
-                          */
-                        MButton
-                        {
-                            id: downloadButton
+
+                        component IMButton: MButton {
+
                             Layout.preferredWidth: 140
                             Layout.preferredHeight: 38
                             active: true
                             text: "Download"
-                            textColor: active ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
+                            textColor: activeFocus ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
                             fontWeight: Font.Bold
                             fontSize: 12
-                            borderWidth: active ? 0 : 1
-                            backgroundColor: active ? Style.colorBasePurple : "transparent"
-                            imagePath: active ? Icons.downloadSelected : Icons.download
-                            imageSize: 18
-                            
-                            onClicked: internal.downloadBook()
-                            Keys.onReturnPressed: internal.downloadBook()
-                            Keys.onRightPressed: internal.giveFocusToCancelButton()
-                            Keys.onTabPressed: internal.giveFocusToCancelButton()
+                            borderWidth: activeFocus ? 0 : 1
+                            backgroundColor: activeFocus ? Style.colorBasePurple : "transparent"
+
+                            Keys.onReturnPressed: this.clicked()
                         }
-                        
-                        MButton
-                        {
-                            id: cancelButton
-                            Layout.preferredWidth: 140
-                            Layout.preferredHeight: 38
-                            borderWidth: active ? 0 : 1
-                            backgroundColor: active ? Style.colorBasePurple : "transparent"
-                            opacityOnPressed: 0.7
+
+                        IMButton {
+                            text: "Download"
+                            imageSize: 18
+                            imagePath: activeFocus ? Icons.downloadSelected : ""
+
+                            onClicked: internal.downloadBook()
+                        }
+
+                        IMButton {
                             text: "Cancel"
-                            textColor: active ? Style.colorFocusedButtonText : Style.colorUnfocusedButtonText
-                            fontWeight: Font.Bold
-                            fontSize: 12
-                            
-                            onClicked: root.close()                            
-                            Keys.onReturnPressed: root.close()
-                            Keys.onLeftPressed: internal.giveFocusToDownloadButton()
-                            Keys.onTabPressed: internal.giveFocusToDownloadButton()
+                            opacityOnPressed: 0.7
+
+                            onClicked: root.close()
                         }
                     }
                 }
             }
         }
     }
-    
-    QtObject
-    {
+
+    QtObject {
         id: internal
-        
-        function downloadBook()
-        {
-            // TODO: Implement
-        }
-        
-        function giveFocusToCancelButton()
-        {
-            downloadButton.active = false;
-            cancelButton.active = true;
-            cancelButton.giveFocus();
-        }
-        
-        function giveFocusToDownloadButton()
-        {
-            cancelButton.active = false;
-            downloadButton.active = true;
-            downloadButton.giveFocus();
+
+        function downloadBook() {// TODO: Implement
         }
     }
 }
