@@ -4,11 +4,11 @@ import QtQuick.Layouts
 import Librum.style
 import Librum.icons
 
+
 /**
  A component which extends MCheckBox by adding a label next to it
  */
-Item
-{
+Item {
     id: root
     property int boxWidth: 22
     property int boxHeight: 22
@@ -26,29 +26,27 @@ Item
     property double fontWeight: Font.Normal
     property int verticalTextOffset: 0
     property color fontColor: Style.colorText
-    signal clicked()
-    
+
+    property bool interactiveFocus: true
+
+    signal clicked
+
     implicitWidth: 100
     implicitHeight: layout.height
-    
-    
-    RowLayout
-    {
+
+    RowLayout {
         id: layout
         spacing: root.spacing
-        
-        
-        MCheckBox
-        {
+
+        MCheckBox {
             id: checkBox
             Layout.preferredWidth: root.boxWidth
             Layout.preferredHeight: root.boxHeight
-            
+
             onClicked: root.clicked()
         }
-        
-        Label
-        {
+
+        Label {
             id: text
             Layout.preferredWidth: root.width
             Layout.topMargin: root.verticalTextOffset
@@ -59,10 +57,4 @@ Item
             wrapMode: Text.WordWrap
         }
     }
-    
-    
-    function giveFocus()
-    {
-        root.forceActiveFocus();
-    }    
 }
